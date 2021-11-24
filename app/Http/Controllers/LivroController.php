@@ -10,7 +10,7 @@ use Validator;
 class LivroController extends Controller
 {
     public function consulta_autor(Request $request){
-        // Buscando autores por nome e/ou sobrenome
+        // Buscando autores por nome/sobrenome
         $livros_filtrados = DB::select(DB::raw("SELECT * FROM livros WHERE autor LIKE '%$request->autor%'"));
         return $livros_filtrados;
     }
@@ -34,7 +34,7 @@ class LivroController extends Controller
         $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:120',
             'categoria' => 'required|string|max:64',
-            'codigo' => 'required|string|max:255',
+            'codigo' => 'required|unique:livros|max:255',
             'autor' => 'required|string|max:100',
             'ebook' => 'required|boolean',
             'tamanho_arquivo' => 'nullable|numeric|min:0',
@@ -52,10 +52,8 @@ class LivroController extends Controller
         $livro->codigo = $request->codigo;
         $livro->autor = $request->autor;
         
-        /*
-            Se o livro for um e-book, o atributo de tamanho de arquivo é não nulo, e caso não seja um e-book,
-            daí o atribulo peso será não nulo.
-        */
+        /* Se o livro for um e-book, o atributo de tamanho de arquivo é não nulo, e caso não seja um e-book,
+        daí o atribulo peso será não nulo. */
         if($request->ebook){
             $livro->ebook = true;
             $livro->tamanho_arquivo = $request->tamanho_arquivo;
@@ -78,10 +76,12 @@ class LivroController extends Controller
     */
     public function update(Request $request, $id){
 
-        $validator = Validator::make([
+        /* Obs: na validação do campo "código", pode-se alterá-lo ou também manter o mesmo. Diferentemente do caso
+        de criação de um livro, em que não se pode usar um código que já existe no banco de dados. */
+        $validator = Validator::make($request->all(), [
             'nome' => 'required|string|max:120',
             'categoria' => 'required|string|max:64',
-            'codigo' => 'required|string|max:255',
+            'codigo' => 'required|unique:livros,codigo,'.$id.'|max:255',
             'autor' => 'required|string|max:100',
             'ebook' => 'required|boolean',
             'tamanho_arquivo' => 'nullable|numeric|min:0',

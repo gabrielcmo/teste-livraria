@@ -17,7 +17,7 @@ class CreateLivrosTable extends Migration
             $table->id();
             $table->string('nome');
             $table->string('categoria');
-            $table->string('codigo');
+            $table->string('codigo')->unique();
             $table->string('autor');
             $table->boolean('ebook');
             $table->float('tamanho_arquivo', 4, 2)->nullable();
