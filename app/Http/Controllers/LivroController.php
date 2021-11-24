@@ -19,7 +19,7 @@ class LivroController extends Controller
         $livro = Livro::find($id);
 
         if($livro == null){
-            return $validator->errors()->first();
+            return "Não há nenhum livro com esse ID";
         }
         
         return Livro::find($id);
@@ -90,7 +90,7 @@ class LivroController extends Controller
         ]);
 
         if($validator->fails()){
-            return "Há algum erro com os dados enviados";
+            return $validator->errors()->first();
         }
 
         $livro = Livro::find($id);
